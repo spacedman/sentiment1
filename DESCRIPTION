@@ -1,0 +1,22 @@
+Package: sentiment1
+Maintainer: Barry Rowlingson <b.rowlingson@gmail.com>
+Author: rowlings
+Version: 1.0
+License: GPL-3
+Title: Sentiment Analysis Demo 1
+Description: 
+Requires: plyr
+    twitteR
+    tm
+    ggplot2
+    stringr
+Suggests:
+    testthat,
+    roxygen2
+Collate:
+    'dashboard.R'
+    'getTweets.R'
+    'package-sentiment1.r'
+    'processing.R'
+    'score.R'
+    'scoreLM.R'

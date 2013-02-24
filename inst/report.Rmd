@@ -1,0 +1,41 @@
+NHS Twitter Sentiment Analysis
+==============================
+
+```{r init,echo=FALSE,output=FALSE}
+opts_chunk$set(cache=TRUE)
+options(warn=-1)
+require(twitteR)
+
+```
+
+```{r get_tweets}
+
+nhsTweets=searchTwitter("#nhs",n=1000)
+```
+
+```{r score_tweets,output=FALSE,warning=FALSE}
+data(labMIT)
+LMScoref = fScoreLM(labMIT,"happiness_average")
+setScoreTweets(nhsTweets,LMScoref)
+nhs = ldply(nhsTweets,function(x){data.frame(day=as.Date(x$created),created=x$created,score=x$score,text=x$text)})
+nhs = nhs[!is.na(nhs$score),]
+nhs$filtered=laply(nhs$text,function(x){filter(x)})
+nhs = nhs[!duplicated(nhs$filtered),]
+ggplot(data=nhs,aes(x=created))+geom_histogram()
+
+ggplot(data=nhs,aes(x=score)) + geom_histogram(aes(y = ..density..)) + geom_density()
+```
+
+Wordclouds
+-----------
+
+```{r quants,output=FALSE}
+qs = quantile(nhs$score,probs=seq(0,1,len=4),na.rm=TRUE)
+nhs$scoreQ = cut(nhs$score,qs)
+pal = brewer.pal(11,"Spectral")
+p1 = brewer.pal(9,"OrRd")[5:9]
+p2 = brewer.pal(9,"PuBu")[5:9]
+wordcloud(nhs[as.numeric(nhs$scoreQ)==1,]$filtered,max.words=100,color=p1,random.order=FALSE)
+wordcloud(nhs[as.numeric(nhs$scoreQ)==3,]$filtered,max.words=100,color=p2,random.order=FALSE)
+
+```
